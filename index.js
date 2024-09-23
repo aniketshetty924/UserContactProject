@@ -105,3 +105,6 @@ staff1.deleteStaffContactDetailByID(2, 0);
 console.log(JSON.stringify(staff1, null, 2));
 
 console.log(staff1.getContactByID(2));
+
+console.log("-------------------------");
+console.log(staff1.getContactDetailsByID(2, 1));

@@ -5,6 +5,11 @@ class Contact_Details {
     this.numberType = numberType;
     this.emailType = emailType;
   }
+
+  //get cd id
+  getContactDetailID() {
+    return this.contactDetailsID;
+  }
   static validateDetailsID(cdID) {
     try {
       if (cdID < 0) throw new Error("invalid contact detail ID");
@@ -25,43 +30,37 @@ class Contact_Details {
     }
   }
 
-  static getContactDetailsByID(cdID, allContactDetails) {
-    try {
-      Contact_Details.validateDetailsID(cdID);
-      for (let cDetail of allContactDetails) {
-        if (cDetail.contactDetailsID == cdID) {
-          return cDetail;
-        }
-      }
-      return null;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // static getContactDetailsByID(cdID, allContactDetails) {
+  //   try {
+  //     Contact_Details.validateDetailsID(cdID);
+  //     for (let cDetail of allContactDetails) {
+  //       if (cDetail.contactDetailsID == cdID) {
+  //         return cDetail;
+  //       }
+  //     }
+  //     return null;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   //update contact details of particular staff contact by id
-  static updateContactDetailsByID(
-    cdID,
-    contactDetailToUpdate,
-    parameter,
-    value
-  ) {
+  updateContactDetailsByID(parameter, value) {
     try {
-      Contact_Details.validateDetailsID(cdID);
       switch (parameter) {
         case "numberType":
-          contactDetailToUpdate.updateNumberType(value);
+          this.updateNumberType(value);
           break;
 
         case "emailType":
-          contactDetailToUpdate.updateEmailType(value);
+          this.updateEmailType(value);
           break;
 
         default:
           throw new Error("Enter a valid parameter to change...");
       }
 
-      return contactDetailToUpdate;
+      return this;
     } catch (error) {
       throw error;
     }
@@ -88,25 +87,25 @@ class Contact_Details {
   }
 
   //delete contact detail by ID
-  static deleteContactDetailsByID(cdID, allContactDetails) {
-    try {
-      Contact_Details.validateDetailsID(cdID);
-      // for(let contactDetail of allContactDetails){
-      //   if(contactDetail.contactDetailsID==cdID){
+  // static deleteContactDetailsByID(cdID, allContactDetails) {
+  //   try {
+  //     Contact_Details.validateDetailsID(cdID);
+  //     // for(let contactDetail of allContactDetails){
+  //     //   if(contactDetail.contactDetailsID==cdID){
 
-      //   }
-      // }
+  //     //   }
+  //     // }
 
-      console.log("in deleted of cd...");
-      console.log(allContactDetails);
-      const indexOfFoundContactDetail = allContactDetails.findIndex((obj) => {
-        return obj.contactDetailsID == cdID;
-      });
-      allContactDetails.splice(indexOfFoundContactDetail, 1);
-    } catch (error) {
-      throw error;
-    }
-  }
+  //     console.log("in deleted of cd...");
+  //     console.log(allContactDetails);
+  //     const indexOfFoundContactDetail = allContactDetails.findIndex((obj) => {
+  //       return obj.contactDetailsID == cdID;
+  //     });
+  //     allContactDetails.splice(indexOfFoundContactDetail, 1);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }
 
 module.exports = Contact_Details;

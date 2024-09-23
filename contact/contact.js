@@ -63,6 +63,7 @@ class Contact {
           }
         }
       }
+
       return null;
     } catch (error) {
       throw error;
@@ -70,38 +71,26 @@ class Contact {
   }
 
   //update given staff contact
-  static updateStaffContactByID(
-    contactID,
-    parameter,
-    value,
-    staffContactToUpdate
-  ) {
+  updateStaffContactByID(parameter, value) {
     try {
       //   if (this.isAdmin)
       //     throw new Error("only staffs can update their contacts...");
-      if (!staffContactToUpdate.isActive)
-        throw new Error(
-          `The contact id ${contactID} is already been deleted .....`
-        );
-      Contact.validateContactID(contactID);
+
       if (typeof parameter != "string") throw new Error("Invalid parameter");
       if (typeof value != "string") throw new Error("invalid value");
-      Contact.validateContactID(contactID);
 
-      let foundStaffContact = staffContactToUpdate;
       switch (parameter) {
         case "firstName":
-          foundStaffContact.updateContactFirstName(value);
+          this.updateContactFirstName(value);
           break;
 
         case "lastName":
-          foundStaffContact.updateContactLastName(value);
+          this.updateContactLastName(value);
           break;
 
         default:
           throw new Error("Enter a valid paramter to change....");
       }
-      return foundStaffContact;
     } catch (error) {
       throw error;
     }
@@ -133,10 +122,10 @@ class Contact {
   }
 
   //Delete contact by ID via staffs
-  static deleteStaffContactByID(contactID, staffContactToDelete) {
+  deleteStaffContactByID(contactID) {
     try {
       Contact.validateContactID(contactID);
-      staffContactToDelete.isActive = false;
+      this.isActive = false;
     } catch (error) {
       throw error;
     }
@@ -162,17 +151,26 @@ class Contact {
       throw error;
     }
   }
-
+  //get all contact details
+  getAllContactDetails() {
+    return this.contactDetails;
+  }
   //get contact details by id
-  getContactDetails(cdID) {
+  getContactDetailsByID(cdID) {
     try {
       Contact_Details.validateDetailsID(cdID);
       let allContactDetails = this.contactDetails;
-      let contactDetail = Contact_Details.getContactDetailsByID(
-        cdID,
-        allContactDetails
-      );
-      return contactDetail;
+      // let contactDetail = Contact_Details.getContactDetailsByID(
+      //   cdID,
+      //   allContactDetails
+      // );
+      let reqContactDetail;
+      for (let contactDetail of allContactDetails) {
+        if (contactDetail.getContactDetailID() == cdID) {
+          reqContactDetail = contactDetail;
+        }
+      }
+      return reqContactDetail;
     } catch (error) {
       throw error;
     }
@@ -182,21 +180,13 @@ class Contact {
     try {
       if (!this.isActive)
         throw new Error("oops the contact does not exists .....");
-      Contact_Details.validateDetailsID(cdID);
-      let contactDetailToUpdate = Contact_Details.getContactDetailsByID(
-        cdID,
-        this.contactDetails
-      );
+
+      let reqContactDetail = this.getContactDetailsByID(cdID);
+      reqContactDetail.updateContactDetailsByID(parameter, value);
       // console.log("hiiiiii");
       // console.log(contactDetailToUpdate);
-      let updatedContactDetail = Contact_Details.updateContactDetailsByID(
-        cdID,
-        contactDetailToUpdate,
-        parameter,
-        value
-      );
 
-      return updatedContactDetail;
+      return reqContactDetail;
     } catch (error) {
       throw error;
     }
@@ -205,10 +195,13 @@ class Contact {
   //delete Contact detail by ID
   deleteStaffContactDetailByID(cdID) {
     try {
-      if (!this.isActive)
-        throw new Error("oops the contact does not exists...");
-      Contact_Details.validateDetailsID(cdID);
-      Contact_Details.deleteContactDetailsByID(cdID, this.contactDetails);
+      if (typeof cdID != "number") throw new Error("invalid contact detail id");
+      if (cdID < 0) throw new Error("invalid cd id ");
+      if (cdID > this.contactDetails.length) throw new Error("invalid cd id");
+
+      this.contactDetails = this.contactDetails.filter(
+        (contactDetail) => contactDetail.getContactDetailID() != cdID
+      );
     } catch (error) {
       throw error;
     }

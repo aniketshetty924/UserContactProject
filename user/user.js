@@ -281,7 +281,17 @@ class User {
         throw new Error("invalid contact id..");
       Contact.validateContactID(contactID);
       let allContacts = this.contacts;
-      let staffContact = Contact.getContactByID(contactID, allContacts);
+      // let staffContact = Contact.getContactByID(contactID, allContacts);
+      let staffContact;
+      for (let contact of allContacts) {
+        // console.log("hello", contact.contactID);
+        // console.log("hello", contact.getContactID());
+        if (contact.getContactID() == contactID) {
+          staffContact = contact;
+          break;
+        }
+      }
+
       //   console.log("test this..");
       //   console.log(staffContact);
       return staffContact;
@@ -310,21 +320,13 @@ class User {
         );
       if (contactID >= this.contacts.length)
         throw new Error("invalid contact id..");
-      User.validateContactID(contactID);
-      if (typeof parameter != "string") throw new Error("Invalid parameter");
-      if (typeof value != "string") throw new Error("invalid value");
-      let allContacts = this.contacts;
-      let staffContactToUpdate = Contact.getContactByID(contactID, allContacts);
-      //   console.log("testing updatestaffContact now....");
-      //   console.log(staffContactToUpdate);
-      let updatedStaffContact = Contact.updateStaffContactByID(
-        contactID,
-        parameter,
-        value,
-        staffContactToUpdate
-      );
 
-      return updatedStaffContact;
+      // let allContacts = this.contacts;
+      // let staffContactToUpdate = Contact.getContactByID(contactID, allContacts);
+      let staffContactToUpdate = this.getContactByID(contactID);
+      staffContactToUpdate.updateStaffContactByID(parameter, value);
+
+      return staffContactToUpdate;
     } catch (error) {
       console.log(error);
     }
@@ -341,10 +343,10 @@ class User {
         );
       if (contactID >= this.contacts.length)
         throw new Error("invalid contact id..");
-      Contact.validateContactID(contactID);
-      let allContacts = this.contacts;
-      let staffContactToDelete = Contact.getContactByID(contactID, allContacts);
-      Contact.deleteStaffContactByID(contactID, staffContactToDelete);
+
+      // let staffContactToDelete = Contact.getContactByID(contactID, allContacts);
+      let staffContactToDelete = this.getContactByID(contactID);
+      staffContactToDelete.deleteStaffContactByID(contactID);
     } catch (error) {
       console.log(error);
     }
@@ -362,19 +364,28 @@ class User {
       User.validateContactID(contactID);
       if (typeof numberType != "object") throw new Error("invalid numberType");
       if (typeof emailType != "object") throw new Error("invalid email type!");
-      // console.log("in user new contact details");
 
-      // console.log(numberType);
-      // console.log(emailType);
-      let allContacts = this.contacts;
-      let staffContact = Contact.getContactByID(contactID, allContacts);
-
+      // let allContacts = this.contacts;
+      // let staffContact = Contact.getContactByID(contactID, allContacts);
+      let staffContact = this.getContactByID(contactID);
       staffContact.newContactDetails(numberType, emailType);
+      // staffContact.newContactDetails(numberType, emailType);
     } catch (error) {
       console.log(error);
     }
   }
 
+  //get all contact details
+  getAllContactDetails(contactID) {
+    if (this.isAdmin)
+      throw new Error("Only staffs can create new contact details....");
+    if (!this.isActive)
+      throw new Error("OOps the current staff is does not exists!");
+
+    let staffContact = this.getContactByID(contactID);
+    let allContactDetails = staffContact.getAllContactDetails();
+    return allContactDetails;
+  }
   //get contact details by id via staff
   //cd->contact detail
   getContactDetailsByID(contactID, cdID) {
@@ -383,9 +394,10 @@ class User {
         throw new Error("Only staffs can access contact details!");
       if (!this.isActive)
         throw new Error("OOps staff is already been deleted....");
-      let allContacts = this.contacts;
-      let staffContact = Contact.getContactByID(contactID, allContacts);
-      let contactDetail = staffContact.getContactDetails(cdID);
+      // let allContacts = this.contacts;
+      // let staffContact = Contact.getContactByID(contactID, allContacts);
+      let staffContact = this.getContactByID(contactID);
+      let contactDetail = staffContact.getContactDetailsByID(cdID);
       return contactDetail;
     } catch (error) {
       console.log(error);
@@ -398,10 +410,11 @@ class User {
       if (this.isAdmin)
         throw new Error("Contact details can only be updated by staffs!");
       if (!this.isActive) throw new Error("User does not exist..");
-      let allContacts = this.contacts;
-      let staffContact = Contact.getContactByID(contactID, allContacts);
+      // let allContacts = this.contacts;
+      // let staffContact = Contact.getContactByID(contactID, allContacts);
 
-      // console.log(contactDetailToUpdate);
+      let staffContact = this.getContactByID(contactID);
+
       let updatedContactDetail = staffContact.updateContactDetailsByID(
         cdID,
         parameter,
@@ -421,11 +434,8 @@ class User {
         throw new Error("Contact details can only be deleted by Staff...");
       if (!this.isActive)
         throw new Error("oops staff is already been deleted....");
-      Contact.validateContactID(contactID);
-      Contact_Details.validateDetailsID(cdID);
 
-      let allContacts = this.contacts;
-      let staffContact = Contact.getContactByID(contactID, allContacts);
+      let staffContact = this.getContactByID(contactID);
 
       staffContact.deleteStaffContactDetailByID(cdID);
       console.log(
